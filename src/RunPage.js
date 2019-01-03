@@ -7,6 +7,7 @@ import config from "./config";
 import ControlsModal from "./ControlsModal";
 import FrameTimer from "./FrameTimer";
 import KeyboardController from "./KeyboardController";
+import GamepadController from "./GamepadController";
 import Screen from "./Screen";
 import Speakers from "./Speakers";
 import { NES } from "jsnes";
@@ -147,6 +148,7 @@ class RunPage extends Component {
         console.log(
           "Buffer underrun, running another frame to try and catch up"
         );
+
         this.nes.frame();
         // desiredSize will be 2048, and the NES produces 1468 samples on each
         // frame so we might need a second frame to be run. Give up after that
@@ -186,6 +188,22 @@ class RunPage extends Component {
       this.keyboardController.handleKeyPress
     );
 
+    this.gamepadController = new GamepadController({
+      onButtonDown: this.nes.buttonDown,
+      onButtonUp: this.nes.buttonUp
+    });
+
+    window.addEventListener(
+      "gamepadconnected",
+      this.gamepadController.handleGamepadConnected
+    );
+    window.addEventListener(
+      "gamepaddisconnected",
+      this.gamepadController.handleGamepadDisconnected
+    );
+
+    this.gamepadPolling = this.gamepadController.startPolling();
+
     window.addEventListener("resize", this.layout);
     this.layout();
 
@@ -206,6 +224,18 @@ class RunPage extends Component {
       "keypress",
       this.keyboardController.handleKeyPress
     );
+
+    window.removeEventListener(
+      "gamepadconnected",
+      this.gamepadController.handleGamepadConnected
+    );
+    window.removeEventListener(
+      "gamepaddisconnected",
+      this.gamepadController.handleGamepadDisconnected
+    );
+
+    this.gamepadPolling.stop();
+
     window.removeEventListener("resize", this.layout);
 
     window.nes = undefined;
