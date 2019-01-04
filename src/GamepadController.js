@@ -1,29 +1,30 @@
-import { Controller } from "jsnes";
-
-// Mapping buttons code to [controller, button]
-const BUTTON_ACTIONS = {
-  0: [1, Controller.BUTTON_A],
-  2: [1, Controller.BUTTON_B],
-  8: [1, Controller.BUTTON_SELECT],
-  9: [1, Controller.BUTTON_START],
-  12: [1, Controller.BUTTON_UP],
-  13: [1, Controller.BUTTON_DOWN],
-  14: [1, Controller.BUTTON_LEFT],
-  15: [1, Controller.BUTTON_RIGHT]
-};
-
 export default class GamepadController {
   constructor(options) {
     this.onButtonDown = options.onButtonDown;
     this.onButtonUp = options.onButtonUp;
     this.gamepadsIndexes = [];
     this.gamepadState = [];
+    this.buttonCallback = null;
   }
+
+  _getPlayerNumberFromGamepad = (gamepad) => {
+    if (this.gamepadConfig.playerGamepadId[0] === gamepad.id) {
+      return 1;
+    }
+
+    if (this.gamepadConfig.playerGamepadId[1] === gamepad.id) {
+      return 2;
+    }
+
+    return 1;
+  };
 
   poll = () => {
     const gamepads = navigator.getGamepads
       ? navigator.getGamepads()
       : navigator.webkitGetGamepads();
+
+    const usedPlayers = [];
 
     for (let i = 0; i < this.gamepadsIndexes.length; i++) {
       const gamepadIndex = this.gamepadsIndexes[i];
@@ -38,15 +39,38 @@ export default class GamepadController {
       const buttons = gamepad.buttons;
       const previousButtons = previousGamepad.buttons;
 
-      for (let code in BUTTON_ACTIONS) {
-        const button = buttons[code];
-        const previousButton = previousButtons[code];
+      if (this.buttonCallback) {
+        for (let code = 0; code < buttons.length; code++) {
+          const button = buttons[code];
+          if (button.pressed) {
+            this.buttonCallback({gamepadId: gamepad.id, type: 'button', code: code});
+          }
+        }
+      } else if (this.gamepadConfig) {
+        let playerNumber = this._getPlayerNumberFromGamepad(gamepad);
+        if (usedPlayers.length < 2) {
+          if (usedPlayers.indexOf(playerNumber) !== -1) {
+            playerNumber++;
+            if (playerNumber > 2) playerNumber = 1;
+          }
+          usedPlayers.push(playerNumber);
 
-        const action = BUTTON_ACTIONS[code];
-        if (button.pressed && !previousButton.pressed) {
-          this.onButtonDown(action[0], action[1]);
-        } else if (!button.pressed && previousButton.pressed) {
-          this.onButtonUp(action[0], action[1]);
+          const configButtons = this.gamepadConfig.configs[gamepad.id].buttons;
+
+          for (let i = 0; i < configButtons.length; i++) {
+            const configButton = configButtons[i];
+            if (configButton.type === 'button') {
+              const code = configButton.code;
+              const button = buttons[code];
+              const previousButton = previousButtons[code];
+
+              if (button.pressed && !previousButton.pressed) {
+                this.onButtonDown(playerNumber, configButton.buttonId);
+              } else if (!button.pressed && previousButton.pressed) {
+                this.onButtonUp(playerNumber, configButton.buttonId);
+              }
+            }
+          }
         }
       }
 
@@ -66,6 +90,36 @@ export default class GamepadController {
   handleGamepadDisconnected = e => {
     this.gamepadsIndexes = this.gamepads.filter(g => g !== e.gamepad.index);
     e.preventDefault();
+  };
+
+  promptButton = f => {
+    this.buttonCallback = (buttonInfo) => {
+      f(buttonInfo);
+      this.buttonCallback = null;
+    };
+  };
+
+  loadGamepadConfig = () => {
+    var gamepadConfig;
+    try {
+      gamepadConfig = localStorage.getItem("gamepadConfig");
+      if (gamepadConfig) {
+        gamepadConfig = JSON.parse(gamepadConfig);
+      }
+    } catch (e) {
+      console.log("Failed to get gamepadConfig from localStorage.", e);
+    }
+
+    this.gamepadConfig = gamepadConfig
+  };
+
+  setGamepadConfig = gamepadConfig => {
+    try {
+      localStorage.setItem("gamepadConfig", JSON.stringify(gamepadConfig));
+      this.gamepadConfig = gamepadConfig;
+    } catch (e) {
+      console.log("Failed to set gamepadConfig in localStorage");
+    }
   };
 
   startPolling = () => {

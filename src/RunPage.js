@@ -123,6 +123,9 @@ class RunPage extends Component {
                 toggle={this.toggleControlsModal}
                 keys={this.keyboardController.keys}
                 setKeys={this.keyboardController.setKeys}
+                promptButton={this.gamepadController.promptButton}
+                gamepadConfig={this.gamepadController.gamepadConfig}
+                setGamepadConfig={this.gamepadController.setGamepadConfig}
               />
             )}
           </div>
@@ -192,6 +195,8 @@ class RunPage extends Component {
       onButtonDown: this.nes.buttonDown,
       onButtonUp: this.nes.buttonUp
     });
+
+    this.gamepadController.loadGamepadConfig();
 
     window.addEventListener(
       "gamepadconnected",
