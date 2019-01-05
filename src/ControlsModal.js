@@ -18,6 +18,7 @@ class ControlsModal extends Component {
     super(props);
     this.state = { gamepadConfig: props.gamepadConfig, keys: props.keys, button: undefined, modified: false };
     this.handleKeyDown = this.handleKeyDown.bind(this);
+    this.handleGamepadButtonDown = this.handleGamepadButtonDown.bind(this);
     this.listenForKey = this.listenForKey.bind(this);
 
     this.state.gamepadConfig = this.state.gamepadConfig || {};
@@ -38,41 +39,44 @@ class ControlsModal extends Component {
 
   listenForKey(button) {
     this.setState({ button });
-
-    this.props.promptButton(buttonInfo => {
-      const playerId = button[0];
-      const buttonId = button[1];
-
-      const gamepadId = buttonInfo.gamepadId;
-      const gamepadConfig = this.state.gamepadConfig;
-
-      // link player to gamepad
-      const playerGamepadId = gamepadConfig.playerGamepadId.slice(0);
-      const newConfig = {};
-
-      playerGamepadId[playerId-1] = gamepadId;
-
-      const rejectButtonId = b => {
-        return b.buttonId !== buttonId;
-      };
-
-      const newButton = {code: buttonInfo.code, type: buttonInfo.type, buttonId: buttonId};
-      newConfig[gamepadId] = {
-        buttons: (gamepadConfig.configs[gamepadId] || {buttons: []}).buttons.filter(rejectButtonId).concat([newButton])
-      };
-
-      const configs = Object.assign({}, gamepadConfig.configs, newConfig);
-
-      this.setState({
-        gamepadConfig: {
-          configs: configs,
-          playerGamepadId: playerGamepadId
-        },
-        controllerIcon: playerGamepadId.map(gamepadId => gamepadId ? GAMEPAD_ICON : KEYBOARD_ICON),
-        modified: true
-      });
-    });
+    this.props.promptButton(this.handleGamepadButtonDown);
     document.addEventListener("keydown", this.handleKeyDown);
+  }
+
+  handleGamepadButtonDown(buttonInfo) {
+    var button = this.state.button;
+
+    const playerId = button[0];
+    const buttonId = button[1];
+
+    const gamepadId = buttonInfo.gamepadId;
+    const gamepadConfig = this.state.gamepadConfig;
+
+    // link player to gamepad
+    const playerGamepadId = gamepadConfig.playerGamepadId.slice(0);
+    const newConfig = {};
+
+    playerGamepadId[playerId-1] = gamepadId;
+
+    const rejectButtonId = b => {
+      return b.buttonId !== buttonId;
+    };
+
+    const newButton = {code: buttonInfo.code, type: buttonInfo.type, buttonId: buttonId};
+    newConfig[gamepadId] = {
+      buttons: (gamepadConfig.configs[gamepadId] || {buttons: []}).buttons.filter(rejectButtonId).concat([newButton])
+    };
+
+    const configs = Object.assign({}, gamepadConfig.configs, newConfig);
+
+    this.setState({
+      gamepadConfig: {
+        configs: configs,
+        playerGamepadId: playerGamepadId
+      },
+      controllerIcon: playerGamepadId.map(gamepadId => gamepadId ? GAMEPAD_ICON : KEYBOARD_ICON),
+      modified: true
+    });
   }
 
   handleKeyDown(event) {

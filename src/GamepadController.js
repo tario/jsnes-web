@@ -7,6 +7,17 @@ export default class GamepadController {
     this.buttonCallback = null;
   }
 
+  disableIfGamepadEnabled = (callback) => {
+    var self = this;
+    return (playerId, buttonId) => {
+      var playerGamepadId = self.gamepadConfig.playerGamepadId;
+      if (!playerGamepadId || !playerGamepadId[playerId-1]) {
+        // allow callback only if player is not associated to any gamepad
+        return callback(playerId, buttonId);
+      }
+    };
+  };
+
   _getPlayerNumberFromGamepad = (gamepad) => {
     if (this.gamepadConfig.playerGamepadId[0] === gamepad.id) {
       return 1;

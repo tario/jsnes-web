@@ -176,21 +176,6 @@ class RunPage extends Component {
       onWriteFrame: Raven.wrap(this.screen.writeBuffer)
     });
 
-    this.keyboardController = new KeyboardController({
-      onButtonDown: this.nes.buttonDown,
-      onButtonUp: this.nes.buttonUp
-    });
-
-    // Load keys from localStorage (if they exist)
-    this.keyboardController.loadKeys();
-
-    document.addEventListener("keydown", this.keyboardController.handleKeyDown);
-    document.addEventListener("keyup", this.keyboardController.handleKeyUp);
-    document.addEventListener(
-      "keypress",
-      this.keyboardController.handleKeyPress
-    );
-
     this.gamepadController = new GamepadController({
       onButtonDown: this.nes.buttonDown,
       onButtonUp: this.nes.buttonUp
@@ -208,6 +193,21 @@ class RunPage extends Component {
     );
 
     this.gamepadPolling = this.gamepadController.startPolling();
+
+    this.keyboardController = new KeyboardController({
+      onButtonDown: this.gamepadController.disableIfGamepadEnabled(this.nes.buttonDown),
+      onButtonUp: this.gamepadController.disableIfGamepadEnabled(this.nes.buttonUp)
+    });
+
+    // Load keys from localStorage (if they exist)
+    this.keyboardController.loadKeys();
+
+    document.addEventListener("keydown", this.keyboardController.handleKeyDown);
+    document.addEventListener("keyup", this.keyboardController.handleKeyUp);
+    document.addEventListener(
+      "keypress",
+      this.keyboardController.handleKeyPress
+    );
 
     window.addEventListener("resize", this.layout);
     this.layout();
