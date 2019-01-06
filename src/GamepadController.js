@@ -104,10 +104,14 @@ export default class GamepadController {
   };
 
   promptButton = f => {
-    this.buttonCallback = (buttonInfo) => {
-      f(buttonInfo);
-      this.buttonCallback = null;
-    };
+    if (!f) {
+      this.buttonCallback = f;
+    } else {
+      this.buttonCallback = (buttonInfo) => {
+        f(buttonInfo);
+        this.buttonCallback = null;
+      };
+    }
   };
 
   loadGamepadConfig = () => {

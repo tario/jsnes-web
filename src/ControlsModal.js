@@ -34,7 +34,7 @@ class ControlsModal extends Component {
       this.props.setKeys(this.state.keys);
       this.props.setGamepadConfig(this.state.gamepadConfig);
     }
-    this.removeKeyListener("keydown", this.handleKeyDown);
+    this.removeKeyListener();
   }
 
   listenForKey(button) {
@@ -77,6 +77,8 @@ class ControlsModal extends Component {
       controllerIcon: playerGamepadId.map(gamepadId => gamepadId ? GAMEPAD_ICON : KEYBOARD_ICON),
       modified: true
     });
+
+    this.removeKeyListener();
   }
 
   handleKeyDown(event) {
@@ -110,10 +112,12 @@ class ControlsModal extends Component {
       controllerIconAlt: playerGamepadId.map(gamepadId => gamepadId ? 'gamepad' : 'keyboard'),
       modified: true
     });
-    document.removeEventListener("keydown", this.handleKeyDown);
+
+    this.removeKeyListener();
   }
 
   removeKeyListener() {
+    this.props.promptButton(null);
     document.removeEventListener("keydown", this.handleKeyDown);
   }
 
