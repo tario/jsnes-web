@@ -58,6 +58,11 @@ class ControlMapperRow extends Component {
     var waitingForKey = 0;
     var waitingForKeyPlayer = 0;
 
+    var gamepadButtonName = gamepadButton => {
+      if (gamepadButton.type === 'button') return 'Btn-' + gamepadButton.code;
+      if (gamepadButton.type === 'axis') return 'Axis-' + gamepadButton.code + ' ' + gamepadButton.value;
+    };
+
     if (this.props.gamepadConfig && this.props.gamepadConfig.playerGamepadId) {
       const playerGamepadId = this.props.gamepadConfig.playerGamepadId;
       if (playerGamepadId[0]) {
@@ -65,7 +70,7 @@ class ControlMapperRow extends Component {
           gamepadButton = searchButton(this.props.gamepadConfig.configs[playerGamepadId[0]], button);
           newButton = searchNewButton(prevProps.gamepadConfig.configs[playerGamepadId[0]], this.props.gamepadConfig.configs[playerGamepadId[0]]);
           if (gamepadButton) {
-            playerButtons[0] = 'Btn-' + gamepadButton.code;
+            playerButtons[0] = gamepadButtonName(gamepadButton);
           } else {
             if (newButton && newButton.buttonId === this.props.prevButton) {
               if (!waitingForKey) {
@@ -81,7 +86,7 @@ class ControlMapperRow extends Component {
           gamepadButton = searchButton(this.props.gamepadConfig.configs[playerGamepadId[1]], button);
           newButton = searchNewButton(prevProps.gamepadConfig.configs[playerGamepadId[1]], this.props.gamepadConfig.configs[playerGamepadId[1]]);
           if (gamepadButton) {
-            playerButtons[1] = 'Btn-' + gamepadButton.code;
+            playerButtons[1] = gamepadButtonName(gamepadButton);
           } else {
             if (newButton && newButton.buttonId === this.props.prevButton) {
               if (!waitingForKey) {

@@ -64,7 +64,7 @@ class ControlsModal extends Component {
       return b.buttonId !== buttonId;
     };
 
-    const newButton = {code: buttonInfo.code, type: buttonInfo.type, buttonId: buttonId};
+    const newButton = {code: buttonInfo.code, type: buttonInfo.type, buttonId: buttonId, value: buttonInfo.value};
     newConfig[gamepadId] = {
       buttons: (gamepadConfig.configs[gamepadId] || {buttons: []}).buttons.filter(rejectButtonId).concat([newButton])
     };

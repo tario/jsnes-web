@@ -55,6 +55,19 @@ export default class GamepadController {
       const previousButtons = previousGamepad.buttons;
 
       if (this.buttonCallback) {
+        for (let code = 0; code < gamepad.axes.length; code++) {
+          const axis = gamepad.axes[code];
+          const previousAxis = previousGamepad.axes[code];
+
+          if (axis === -1 && previousAxis !== -1) {
+            this.buttonCallback({gamepadId: gamepad.id, type: "axis", code: code, value: axis});
+          }
+
+          if (axis === 1 && previousAxis !== 1) {
+            this.buttonCallback({gamepadId: gamepad.id, type: "axis", code: code, value: axis});
+          }
+        }
+
         for (let code = 0; code < buttons.length; code++) {
           const button = buttons[code];
           const previousButton = previousButtons[code];
@@ -71,19 +84,33 @@ export default class GamepadController {
           }
           usedPlayers.push(playerNumber);
 
-          const configButtons = this.gamepadConfig.configs[gamepad.id].buttons;
+          if (this.gamepadConfig.configs[gamepad.id]) {
+            const configButtons = this.gamepadConfig.configs[gamepad.id].buttons;
 
-          for (let i = 0; i < configButtons.length; i++) {
-            const configButton = configButtons[i];
-            if (configButton.type === 'button') {
-              const code = configButton.code;
-              const button = buttons[code];
-              const previousButton = previousButtons[code];
+            for (let i = 0; i < configButtons.length; i++) {
+              const configButton = configButtons[i];
+              if (configButton.type === 'button') {
+                const code = configButton.code;
+                const button = buttons[code];
+                const previousButton = previousButtons[code];
 
-              if (button.pressed && !previousButton.pressed) {
-                this.onButtonDown(playerNumber, configButton.buttonId);
-              } else if (!button.pressed && previousButton.pressed) {
-                this.onButtonUp(playerNumber, configButton.buttonId);
+                if (button.pressed && !previousButton.pressed) {
+                  this.onButtonDown(playerNumber, configButton.buttonId);
+                } else if (!button.pressed && previousButton.pressed) {
+                  this.onButtonUp(playerNumber, configButton.buttonId);
+                }
+              } else if (configButton.type === 'axis') {
+                const code = configButton.code;
+                const axis = gamepad.axes[code];
+                const previousAxis = previousGamepad.axes[code];
+
+                if (axis === configButton.value && previousAxis !== configButton.value) {
+                  this.onButtonDown(playerNumber, configButton.buttonId);
+                }
+
+                if (axis !== configButton.value && previousAxis === configButton.value) {
+                  this.onButtonUp(playerNumber, configButton.buttonId);
+                }
               }
             }
           }
@@ -93,7 +120,8 @@ export default class GamepadController {
       this.gamepadState[gamepadIndex] = {
         buttons: buttons.map(b => {
           return { pressed: b.pressed };
-        })
+        }),
+        axes: gamepad.axes.slice(0)
       };
     }
   };
