@@ -183,15 +183,6 @@ class RunPage extends Component {
 
     this.gamepadController.loadGamepadConfig();
 
-    window.addEventListener(
-      "gamepadconnected",
-      this.gamepadController.handleGamepadConnected
-    );
-    window.addEventListener(
-      "gamepaddisconnected",
-      this.gamepadController.handleGamepadDisconnected
-    );
-
     this.gamepadPolling = this.gamepadController.startPolling();
 
     this.keyboardController = new KeyboardController({
@@ -228,15 +219,6 @@ class RunPage extends Component {
     document.removeEventListener(
       "keypress",
       this.keyboardController.handleKeyPress
-    );
-
-    window.removeEventListener(
-      "gamepadconnected",
-      this.gamepadController.handleGamepadConnected
-    );
-    window.removeEventListener(
-      "gamepaddisconnected",
-      this.gamepadController.handleGamepadDisconnected
     );
 
     this.gamepadPolling.stop();

@@ -2,7 +2,6 @@ export default class GamepadController {
   constructor(options) {
     this.onButtonDown = options.onButtonDown;
     this.onButtonUp = options.onButtonUp;
-    this.gamepadsIndexes = [];
     this.gamepadState = [];
     this.buttonCallback = null;
   }
@@ -41,10 +40,13 @@ export default class GamepadController {
 
     const usedPlayers = [];
 
-    for (let i = 0; i < this.gamepadsIndexes.length; i++) {
-      const gamepadIndex = this.gamepadsIndexes[i];
+    for (let gamepadIndex = 0; gamepadIndex < gamepads.length; gamepadIndex++) {
       const gamepad = gamepads[gamepadIndex];
       const previousGamepad = this.gamepadState[gamepadIndex];
+
+      if (!gamepad) {
+        continue;
+      }
 
       if (!previousGamepad) {
         this.gamepadState[gamepadIndex] = gamepad;
@@ -124,16 +126,6 @@ export default class GamepadController {
         axes: gamepad.axes.slice(0)
       };
     }
-  };
-
-  handleGamepadConnected = e => {
-    this.gamepadsIndexes.push(e.gamepad.index);
-    e.preventDefault();
-  };
-
-  handleGamepadDisconnected = e => {
-    this.gamepadsIndexes = this.gamepads.filter(g => g !== e.gamepad.index);
-    e.preventDefault();
   };
 
   promptButton = f => {
