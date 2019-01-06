@@ -27,6 +27,7 @@ class ControlsModal extends Component {
 
     this.state.controllerIcon = this.state.gamepadConfig.playerGamepadId.map(gamepadId => gamepadId ? GAMEPAD_ICON : KEYBOARD_ICON);
     this.state.controllerIconAlt = this.state.gamepadConfig.playerGamepadId.map(gamepadId => gamepadId ? 'gamepad' : 'keyboard');
+    this.state.currentPromptButton = -1;
   }
 
   componentWillUnmount() {
@@ -38,7 +39,10 @@ class ControlsModal extends Component {
   }
 
   listenForKey(button) {
-    this.setState({ button });
+    var currentPromptButton = button[1];
+
+    this.removeKeyListener();
+    this.setState({ button, currentPromptButton });
     this.props.promptButton(this.handleGamepadButtonDown);
     document.addEventListener("keydown", this.handleKeyDown);
   }
@@ -76,6 +80,7 @@ class ControlsModal extends Component {
         configs: configs,
         playerGamepadId: playerGamepadId
       },
+      currentPromptButton: -1,
       controllerIcon: playerGamepadId.map(gamepadId => gamepadId ? GAMEPAD_ICON : KEYBOARD_ICON),
       modified: true
     });
@@ -110,6 +115,7 @@ class ControlsModal extends Component {
         configs: this.state.gamepadConfig.configs,
         playerGamepadId: playerGamepadId
       },
+      currentPromptButton: -1,
       controllerIcon: playerGamepadId.map(gamepadId => gamepadId ? GAMEPAD_ICON : KEYBOARD_ICON),
       controllerIconAlt: playerGamepadId.map(gamepadId => gamepadId ? 'gamepad' : 'keyboard'),
       modified: true
@@ -141,6 +147,7 @@ class ControlsModal extends Component {
             <tbody>
               <ControlMapperRow
                 buttonName="Left"
+                currentPromptButton={this.state.currentPromptButton}
                 button={Controller.BUTTON_LEFT}
                 prevButton={Controller.BUTTON_SELECT}
                 keys={this.state.keys}
@@ -149,6 +156,7 @@ class ControlsModal extends Component {
               />
               <ControlMapperRow
                 buttonName="Right"
+                currentPromptButton={this.state.currentPromptButton}
                 button={Controller.BUTTON_RIGHT}
                 prevButton={Controller.BUTTON_LEFT}
                 keys={this.state.keys}
@@ -157,6 +165,7 @@ class ControlsModal extends Component {
               />
               <ControlMapperRow
                 buttonName="Up"
+                currentPromptButton={this.state.currentPromptButton}
                 button={Controller.BUTTON_UP}
                 prevButton={Controller.BUTTON_RIGHT}
                 keys={this.state.keys}
@@ -165,6 +174,7 @@ class ControlsModal extends Component {
               />
               <ControlMapperRow
                 buttonName="Down"
+                currentPromptButton={this.state.currentPromptButton}
                 button={Controller.BUTTON_DOWN}
                 prevButton={Controller.BUTTON_UP}
                 keys={this.state.keys}
@@ -173,6 +183,7 @@ class ControlsModal extends Component {
               />
               <ControlMapperRow
                 buttonName="A"
+                currentPromptButton={this.state.currentPromptButton}
                 button={Controller.BUTTON_A}
                 prevButton={Controller.BUTTON_DOWN}
                 keys={this.state.keys}
@@ -181,6 +192,7 @@ class ControlsModal extends Component {
               />
               <ControlMapperRow
                 buttonName="B"
+                currentPromptButton={this.state.currentPromptButton}
                 button={Controller.BUTTON_B}
                 prevButton={Controller.BUTTON_A}
                 keys={this.state.keys}
@@ -189,6 +201,7 @@ class ControlsModal extends Component {
               />
               <ControlMapperRow
                 buttonName="Start"
+                currentPromptButton={this.state.currentPromptButton}
                 button={Controller.BUTTON_START}
                 prevButton={Controller.BUTTON_B}
                 keys={this.state.keys}
@@ -197,6 +210,7 @@ class ControlsModal extends Component {
               />
               <ControlMapperRow
                 buttonName="Select"
+                currentPromptButton={this.state.currentPromptButton}
                 button={Controller.BUTTON_SELECT}
                 prevButton={Controller.BUTTON_START}
                 keys={this.state.keys}

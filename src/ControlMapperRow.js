@@ -112,11 +112,11 @@ class ControlMapperRow extends Component {
     if (waitingForKey) {
       newState.waitingForKey = waitingForKey;
     } else if (prevState.waitingForKey === 1) {
-      if (playerButtons[0] !== "") {
+      if (this.props.currentPromptButton !== this.props.button) {
         newState.waitingForKey = 0;
       }
     } else if (prevState.waitingForKey === 2) {
-      if (playerButtons[1] !== "") {
+      if (this.props.currentPromptButton !== this.props.button) {
         newState.waitingForKey = 0;
       }
     }
