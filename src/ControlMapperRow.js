@@ -34,6 +34,7 @@ class ControlMapperRow extends Component {
     var button = this.props.button;
     var playerButtons = [];
     var gamepadButton;
+    var newButton;
 
     for (var key in keys) {
       if (keys[key][0] === 1 && keys[key][1] === button) {
@@ -48,32 +49,75 @@ class ControlMapperRow extends Component {
       return gamepadConfig.buttons.filter(b => b.buttonId === buttonId)[0];
     };
 
+    var searchNewButton = (prevGamepadConfig, gamepadConfig) => {
+      return gamepadConfig.buttons.filter(b => {
+        return !prevGamepadConfig || !prevGamepadConfig.buttons.some(b2 => b2.buttonId === b.buttonId);
+      })[0];
+    };
+
+    var waitingForKey = 0;
+    var waitingForKeyPlayer = 0;
+
     if (this.props.gamepadConfig && this.props.gamepadConfig.playerGamepadId) {
       const playerGamepadId = this.props.gamepadConfig.playerGamepadId;
       if (playerGamepadId[0]) {
           playerButtons[0] = '';
           gamepadButton = searchButton(this.props.gamepadConfig.configs[playerGamepadId[0]], button);
+          newButton = searchNewButton(prevProps.gamepadConfig.configs[playerGamepadId[0]], this.props.gamepadConfig.configs[playerGamepadId[0]]);
           if (gamepadButton) {
             playerButtons[0] = 'Btn-' + gamepadButton.code;
+          } else {
+            if (newButton && newButton.buttonId === this.props.prevButton) {
+              if (!waitingForKey) {
+                waitingForKey = 1;
+                waitingForKeyPlayer = 1;
+              }
+            }
           }
       }
 
       if (playerGamepadId[1]) {
           playerButtons[1] = '';
           gamepadButton = searchButton(this.props.gamepadConfig.configs[playerGamepadId[1]], button);
+          newButton = searchNewButton(prevProps.gamepadConfig.configs[playerGamepadId[1]], this.props.gamepadConfig.configs[playerGamepadId[1]]);
           if (gamepadButton) {
             playerButtons[1] = 'Btn-' + gamepadButton.code;
+          } else {
+            if (newButton && newButton.buttonId === this.props.prevButton) {
+              if (!waitingForKey) {
+                waitingForKey = 2;
+                waitingForKeyPlayer = 2;
+              }
+            }
           }
       }
     }
 
+    var newState = {};
+
+    if (waitingForKey) {
+      this.props.handleClick([waitingForKeyPlayer, this.props.button]);
+    }
     // Prevent setState being called repeatedly
-    if (prevState.playerOneButton !== playerButtons[0] || prevState.playerTwoButton !== playerButtons[1] || prevState.waitingForKey !== 0 ) {
-      this.setState({
-        playerOneButton: playerButtons[0],
-        playerTwoButton: playerButtons[1],
-        waitingForKey: 0
-      });
+    if (prevState.playerOneButton !== playerButtons[0] || prevState.playerTwoButton !== playerButtons[1] ) {
+      newState.playerOneButton = playerButtons[0];
+      newState.playerTwoButton = playerButtons[1];
+    }
+
+    if (waitingForKey) {
+      newState.waitingForKey = waitingForKey;
+    } else if (prevState.waitingForKey === 1) {
+      if (playerButtons[0] !== "") {
+        newState.waitingForKey = 0;
+      }
+    } else if (prevState.waitingForKey === 2) {
+      if (playerButtons[1] !== "") {
+        newState.waitingForKey = 0;
+      }
+    }
+
+    if (Object.keys(newState).length > 0) {
+      this.setState(newState);
     }
   }
 

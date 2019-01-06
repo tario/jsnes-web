@@ -57,7 +57,8 @@ export default class GamepadController {
       if (this.buttonCallback) {
         for (let code = 0; code < buttons.length; code++) {
           const button = buttons[code];
-          if (button.pressed) {
+          const previousButton = previousButtons[code];
+          if (button.pressed && !previousButton.pressed) {
             this.buttonCallback({gamepadId: gamepad.id, type: 'button', code: code});
           }
         }
@@ -112,8 +113,8 @@ export default class GamepadController {
       this.buttonCallback = f;
     } else {
       this.buttonCallback = (buttonInfo) => {
-        f(buttonInfo);
         this.buttonCallback = null;
+        f(buttonInfo);
       };
     }
   };

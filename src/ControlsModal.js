@@ -44,6 +44,8 @@ class ControlsModal extends Component {
   }
 
   handleGamepadButtonDown(buttonInfo) {
+    this.removeKeyListener();
+
     var button = this.state.button;
 
     const playerId = button[0];
@@ -77,11 +79,11 @@ class ControlsModal extends Component {
       controllerIcon: playerGamepadId.map(gamepadId => gamepadId ? GAMEPAD_ICON : KEYBOARD_ICON),
       modified: true
     });
-
-    this.removeKeyListener();
   }
 
   handleKeyDown(event) {
+    this.removeKeyListener();
+
     var button = this.state.button;
     var keys = this.state.keys;
     var newKeys = {};
@@ -112,8 +114,6 @@ class ControlsModal extends Component {
       controllerIconAlt: playerGamepadId.map(gamepadId => gamepadId ? 'gamepad' : 'keyboard'),
       modified: true
     });
-
-    this.removeKeyListener();
   }
 
   removeKeyListener() {
@@ -142,6 +142,7 @@ class ControlsModal extends Component {
               <ControlMapperRow
                 buttonName="Left"
                 button={Controller.BUTTON_LEFT}
+                prevButton={Controller.BUTTON_SELECT}
                 keys={this.state.keys}
                 handleClick={this.listenForKey}
                 gamepadConfig={this.state.gamepadConfig}
@@ -149,6 +150,7 @@ class ControlsModal extends Component {
               <ControlMapperRow
                 buttonName="Right"
                 button={Controller.BUTTON_RIGHT}
+                prevButton={Controller.BUTTON_LEFT}
                 keys={this.state.keys}
                 handleClick={this.listenForKey}
                 gamepadConfig={this.state.gamepadConfig}
@@ -156,6 +158,7 @@ class ControlsModal extends Component {
               <ControlMapperRow
                 buttonName="Up"
                 button={Controller.BUTTON_UP}
+                prevButton={Controller.BUTTON_RIGHT}
                 keys={this.state.keys}
                 handleClick={this.listenForKey}
                 gamepadConfig={this.state.gamepadConfig}
@@ -163,6 +166,7 @@ class ControlsModal extends Component {
               <ControlMapperRow
                 buttonName="Down"
                 button={Controller.BUTTON_DOWN}
+                prevButton={Controller.BUTTON_UP}
                 keys={this.state.keys}
                 handleClick={this.listenForKey}
                 gamepadConfig={this.state.gamepadConfig}
@@ -170,6 +174,7 @@ class ControlsModal extends Component {
               <ControlMapperRow
                 buttonName="A"
                 button={Controller.BUTTON_A}
+                prevButton={Controller.BUTTON_DOWN}
                 keys={this.state.keys}
                 handleClick={this.listenForKey}
                 gamepadConfig={this.state.gamepadConfig}
@@ -177,6 +182,7 @@ class ControlsModal extends Component {
               <ControlMapperRow
                 buttonName="B"
                 button={Controller.BUTTON_B}
+                prevButton={Controller.BUTTON_A}
                 keys={this.state.keys}
                 handleClick={this.listenForKey}
                 gamepadConfig={this.state.gamepadConfig}
@@ -184,6 +190,7 @@ class ControlsModal extends Component {
               <ControlMapperRow
                 buttonName="Start"
                 button={Controller.BUTTON_START}
+                prevButton={Controller.BUTTON_B}
                 keys={this.state.keys}
                 handleClick={this.listenForKey}
                 gamepadConfig={this.state.gamepadConfig}
@@ -191,6 +198,7 @@ class ControlsModal extends Component {
               <ControlMapperRow
                 buttonName="Select"
                 button={Controller.BUTTON_SELECT}
+                prevButton={Controller.BUTTON_START}
                 keys={this.state.keys}
                 handleClick={this.listenForKey}
                 gamepadConfig={this.state.gamepadConfig}
