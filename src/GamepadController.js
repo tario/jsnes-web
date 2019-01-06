@@ -10,6 +10,10 @@ export default class GamepadController {
   disableIfGamepadEnabled = (callback) => {
     var self = this;
     return (playerId, buttonId) => {
+      if (!self.gamepadConfig) {
+        return callback(playerId, buttonId);
+      }
+
       var playerGamepadId = self.gamepadConfig.playerGamepadId;
       if (!playerGamepadId || !playerGamepadId[playerId-1]) {
         // allow callback only if player is not associated to any gamepad
