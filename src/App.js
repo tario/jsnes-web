@@ -29,7 +29,7 @@ class App extends Component {
       );
     }
     return (
-      <BrowserRouter>
+      <BrowserRouter basename="/jsnes-web/build">
         <div className="App">
           <Route exact path="/" component={ListPage} />
           <Route exact path="/run" component={RunPage} />
