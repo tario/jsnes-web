@@ -165,8 +165,11 @@ class RunPage extends Component {
     this.nes = new NES({
       onFrame: this.screen.setBuffer,
       onStatusUpdate: console.log,
-      onAudioSample: this.speakers.writeSample
+      onAudioSample: this.speakers.writeSample,
+      preferredFrameRate: 55
     });
+
+    //this.nes.setFramerate(50);
 
     // For debugging
     window.nes = this.nes;
