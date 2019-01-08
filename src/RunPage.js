@@ -186,8 +186,12 @@ class RunPage extends Component {
     this.gamepadPolling = this.gamepadController.startPolling();
 
     this.keyboardController = new KeyboardController({
-      onButtonDown: this.gamepadController.disableIfGamepadEnabled(this.nes.buttonDown),
-      onButtonUp: this.gamepadController.disableIfGamepadEnabled(this.nes.buttonUp)
+      onButtonDown: this.gamepadController.disableIfGamepadEnabled(
+        this.nes.buttonDown
+      ),
+      onButtonUp: this.gamepadController.disableIfGamepadEnabled(
+        this.nes.buttonUp
+      )
     });
 
     // Load keys from localStorage (if they exist)

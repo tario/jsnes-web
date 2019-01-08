@@ -16,17 +16,27 @@ const KEYBOARD_ICON = "../img/keyboard.png";
 class ControlsModal extends Component {
   constructor(props) {
     super(props);
-    this.state = { gamepadConfig: props.gamepadConfig, keys: props.keys, button: undefined, modified: false };
+    this.state = {
+      gamepadConfig: props.gamepadConfig,
+      keys: props.keys,
+      button: undefined,
+      modified: false
+    };
     this.handleKeyDown = this.handleKeyDown.bind(this);
     this.handleGamepadButtonDown = this.handleGamepadButtonDown.bind(this);
     this.listenForKey = this.listenForKey.bind(this);
 
     this.state.gamepadConfig = this.state.gamepadConfig || {};
-    this.state.gamepadConfig.playerGamepadId = this.state.gamepadConfig.playerGamepadId || [null, null];
+    this.state.gamepadConfig.playerGamepadId = this.state.gamepadConfig
+      .playerGamepadId || [null, null];
     this.state.gamepadConfig.configs = this.state.gamepadConfig.configs || {};
 
-    this.state.controllerIcon = this.state.gamepadConfig.playerGamepadId.map(gamepadId => gamepadId ? GAMEPAD_ICON : KEYBOARD_ICON);
-    this.state.controllerIconAlt = this.state.gamepadConfig.playerGamepadId.map(gamepadId => gamepadId ? 'gamepad' : 'keyboard');
+    this.state.controllerIcon = this.state.gamepadConfig.playerGamepadId.map(
+      gamepadId => (gamepadId ? GAMEPAD_ICON : KEYBOARD_ICON)
+    );
+    this.state.controllerIconAlt = this.state.gamepadConfig.playerGamepadId.map(
+      gamepadId => (gamepadId ? "gamepad" : "keyboard")
+    );
     this.state.currentPromptButton = -1;
   }
 
@@ -62,15 +72,22 @@ class ControlsModal extends Component {
     const playerGamepadId = gamepadConfig.playerGamepadId.slice(0);
     const newConfig = {};
 
-    playerGamepadId[playerId-1] = gamepadId;
+    playerGamepadId[playerId - 1] = gamepadId;
 
     const rejectButtonId = b => {
       return b.buttonId !== buttonId;
     };
 
-    const newButton = {code: buttonInfo.code, type: buttonInfo.type, buttonId: buttonId, value: buttonInfo.value};
+    const newButton = {
+      code: buttonInfo.code,
+      type: buttonInfo.type,
+      buttonId: buttonId,
+      value: buttonInfo.value
+    };
     newConfig[gamepadId] = {
-      buttons: (gamepadConfig.configs[gamepadId] || {buttons: []}).buttons.filter(rejectButtonId).concat([newButton])
+      buttons: (gamepadConfig.configs[gamepadId] || { buttons: [] }).buttons
+        .filter(rejectButtonId)
+        .concat([newButton])
     };
 
     const configs = Object.assign({}, gamepadConfig.configs, newConfig);
@@ -81,7 +98,9 @@ class ControlsModal extends Component {
         playerGamepadId: playerGamepadId
       },
       currentPromptButton: -1,
-      controllerIcon: playerGamepadId.map(gamepadId => gamepadId ? GAMEPAD_ICON : KEYBOARD_ICON),
+      controllerIcon: playerGamepadId.map(gamepadId =>
+        gamepadId ? GAMEPAD_ICON : KEYBOARD_ICON
+      ),
       modified: true
     });
   }
@@ -100,7 +119,7 @@ class ControlsModal extends Component {
 
     const playerGamepadId = this.state.gamepadConfig.playerGamepadId.slice(0);
     const playerId = button[0];
-    playerGamepadId[playerId-1] = null;
+    playerGamepadId[playerId - 1] = null;
 
     this.setState({
       keys: {
@@ -116,8 +135,12 @@ class ControlsModal extends Component {
         playerGamepadId: playerGamepadId
       },
       currentPromptButton: -1,
-      controllerIcon: playerGamepadId.map(gamepadId => gamepadId ? GAMEPAD_ICON : KEYBOARD_ICON),
-      controllerIconAlt: playerGamepadId.map(gamepadId => gamepadId ? 'gamepad' : 'keyboard'),
+      controllerIcon: playerGamepadId.map(gamepadId =>
+        gamepadId ? GAMEPAD_ICON : KEYBOARD_ICON
+      ),
+      controllerIconAlt: playerGamepadId.map(gamepadId =>
+        gamepadId ? "gamepad" : "keyboard"
+      ),
       modified: true
     });
   }
@@ -140,8 +163,22 @@ class ControlsModal extends Component {
             <thead>
               <tr>
                 <th>Button</th>
-                <th>Player 1 <img className="controller-icon" src={this.state.controllerIcon[0]} alt={this.state.controllerIconAlt[0]} /></th>
-                <th>Player 2 <img className="controller-icon" src={this.state.controllerIcon[1]} alt={this.state.controllerIconAlt[1]} /></th>
+                <th>
+                  Player 1
+                  <img
+                    className="controller-icon"
+                    src={this.state.controllerIcon[0]}
+                    alt={this.state.controllerIconAlt[0]}
+                  />
+                </th>
+                <th>
+                  Player 2
+                  <img
+                    className="controller-icon"
+                    src={this.state.controllerIcon[1]}
+                    alt={this.state.controllerIconAlt[1]}
+                  />
+                </th>
               </tr>
             </thead>
             <tbody>
